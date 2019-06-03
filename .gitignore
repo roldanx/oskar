@@ -1,10 +1,17 @@
 
 # Oskar folders
 build
-# Exclude Python developers' symbolic links
+
+# Exclude 1kg parquet
+oskar-spark/src/test/resources/1kg.vcf.parquet.meta.json.gz
+oskar-spark/src/test/resources/1kg.vcf.parquet
+
+# Exclude Python developer's symbolic links
 oskar-spark/src/main/python/libs
 oskar-spark/src/main/python/notebooks/data
 oskar-spark/src/main/python/notebooks/pyoskar
+
+# Exclude Jupyter internal files
 oskar-spark/src/main/python/notebooks/metastore_db
 oskar-spark/src/main/python/notebooks/.ipynb_checkpoints
 
@@ -23,6 +30,7 @@ node_modules
 *.out
 *.log
 *.zip
+
 # Maven
 target/
 dependency-reduced-pom.xml
