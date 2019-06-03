@@ -1,11 +1,12 @@
 #!/bin/bash
 
-export PYSPARK_PYTHON=jupyter
+export PYSPARK_DRIVER_PYTHON=jupyter
 export PYSPARK_DRIVER_PYTHON_OPTS='lab'
-export SPARK_CONF_DIR='../conf'
+
+ export SPARK_CONF_DIR='../conf'
 
 if [[ -z "$SPARK_HOME" ]]; then
-  ~/spark-2.3.2-bin-hadoop2.7/bin/pyspark
+  echo "No SPARK_HOME variable found"
 else
   $SPARK_HOME/bin/pyspark
 fi
