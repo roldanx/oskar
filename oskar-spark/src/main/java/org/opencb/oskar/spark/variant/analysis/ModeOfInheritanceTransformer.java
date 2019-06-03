@@ -6,8 +6,9 @@ import org.apache.spark.sql.Column;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.catalyst.expressions.ArrayContains;
+import org.opencb.biodata.models.clinical.interpretation.ClinicalProperty;
 import org.opencb.biodata.models.clinical.pedigree.Pedigree;
-import org.opencb.biodata.models.commons.Phenotype;
+import org.opencb.biodata.models.commons.Disorder;
 import org.opencb.biodata.tools.pedigree.ModeOfInheritance;
 import org.opencb.oskar.spark.commons.OskarException;
 import org.opencb.oskar.spark.variant.VariantMetadataManager;
@@ -15,11 +16,15 @@ import org.opencb.oskar.spark.variant.analysis.params.HasPhenotype;
 import org.opencb.oskar.spark.variant.analysis.params.HasStudyId;
 import org.opencb.oskar.spark.variant.udf.VariantUdfManager;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import static org.apache.spark.sql.functions.col;
 import static org.apache.spark.sql.functions.lit;
+import static org.opencb.biodata.models.clinical.interpretation.ClinicalProperty.Penetrance.COMPLETE;
+import static org.opencb.biodata.models.clinical.interpretation.ClinicalProperty.Penetrance.INCOMPLETE;
+
 /**
  * Filter variants that match a given Mode Of Inheritance pattern.
  *
@@ -122,6 +127,13 @@ public class ModeOfInheritanceTransformer extends AbstractTransformer implements
         String studyId = getStudyId();
         Boolean incompletePenetrance = getOrDefault(incompletePenetranceParam);
         Boolean missingAsReference = getOrDefault(missingAsReferenceParam);
+        ClinicalProperty.Penetrance penetrance;
+
+        if (incompletePenetrance) {
+            penetrance = INCOMPLETE;
+        } else {
+            penetrance = COMPLETE;
+        }
 
         Map<String, List<String>> samplesMap = vmm.samples(df);
         boolean multiStudy = samplesMap.size() > 1;
@@ -140,22 +152,27 @@ public class ModeOfInheritanceTransformer extends AbstractTransformer implements
         switch (moiLowerCase) {
             case MONOALLELIC:
             case "dominant":
-                gtsMap = ModeOfInheritance.dominant(pedigree, new Phenotype(phenotype, phenotype, null), incompletePenetrance);
+                gtsMap = ModeOfInheritance.dominant(pedigree, new Disorder(phenotype, phenotype, "", "",
+                        Collections.emptyList(), Collections.emptyMap()), penetrance);
                 break;
             case BIALLELIC:
             case "recessive":
-                gtsMap = ModeOfInheritance.recessive(pedigree, new Phenotype(phenotype, phenotype, null), incompletePenetrance);
+                gtsMap = ModeOfInheritance.recessive(pedigree, new Disorder(phenotype, phenotype, "", "",
+                        Collections.emptyList(), Collections.emptyMap()), penetrance);
                 break;
             case X_LINKED_MONOALLELIC_INTERNAL: // Internal values already in lower case
-                gtsMap = ModeOfInheritance.xLinked(pedigree, new Phenotype(phenotype, phenotype, null), true);
+                gtsMap = ModeOfInheritance.xLinked(pedigree, new Disorder(phenotype, phenotype, "", "",
+                        Collections.emptyList(), Collections.emptyMap()), true, penetrance);
                 df = df.filter(df.col("chromosome").equalTo("X"));
                 break;
             case X_LINKED_BIALLELIC_INTERNAL: // Internal values already in lower case
-                gtsMap = ModeOfInheritance.xLinked(pedigree, new Phenotype(phenotype, phenotype, null), false);
+                gtsMap = ModeOfInheritance.xLinked(pedigree, new Disorder(phenotype, phenotype, "", "",
+                        Collections.emptyList(), Collections.emptyMap()), false, penetrance);
                 df = df.filter(df.col("chromosome").equalTo("X"));
                 break;
             case Y_LINKED_INTERNAL: // Internal values already in lower case
-                gtsMap = ModeOfInheritance.yLinked(pedigree, new Phenotype(phenotype, phenotype, null));
+                gtsMap = ModeOfInheritance.yLinked(pedigree, new Disorder(phenotype, phenotype, "", "",
+                        Collections.emptyList(), Collections.emptyMap()), penetrance);
                 df = df.filter(df.col("chromosome").equalTo("Y"));
                 break;
             default:

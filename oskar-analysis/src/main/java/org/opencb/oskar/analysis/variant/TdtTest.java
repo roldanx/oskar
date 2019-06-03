@@ -4,7 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.opencb.biodata.models.clinical.pedigree.Member;
 import org.opencb.biodata.models.clinical.pedigree.Pedigree;
 import org.opencb.biodata.models.clinical.pedigree.PedigreeManager;
-import org.opencb.biodata.models.commons.Phenotype;
+import org.opencb.biodata.models.commons.Disorder;
 import org.opencb.biodata.models.feature.Genotype;
 import org.opencb.biodata.tools.pedigree.MendelianError;
 import org.opencb.biodata.tools.pedigree.MendelianError.GenotypeCode;
@@ -15,7 +15,7 @@ import java.util.*;
 import static org.opencb.biodata.tools.pedigree.MendelianError.getAlternateAlleleCount;
 
 public class TdtTest {
-    public TdtTestResult computeTdtTest(List<Pedigree> pedigrees, Map<String, Genotype> genotypes, Phenotype phenotype,
+    public TdtTestResult computeTdtTest(List<Pedigree> pedigrees, Map<String, Genotype> genotypes, Disorder disorder,
                                         String chrom) {
         Set<String> fatherMotherDone = new HashSet<>();
 
@@ -25,7 +25,7 @@ public class TdtTest {
         // For each family
         for (Pedigree pedigree : pedigrees) {
             PedigreeManager pedigreeManager = new PedigreeManager(pedigree);
-            Set<Member> affectedIndividuals = pedigreeManager.getAffectedIndividuals(phenotype);
+            Set<Member> affectedIndividuals = pedigreeManager.getAffectedIndividuals(disorder);
 
             for (Member affectedIndividual : affectedIndividuals) {
                 // We need father and mother
@@ -50,7 +50,7 @@ public class TdtTest {
                 // Consider all offspring in nuclear family
                 for (String siblingId : siblingIds) {
                     Member individual = pedigreeManager.getIndividualMap().get(siblingId);
-                    if (!individual.getPhenotypes().contains(phenotype)) {
+                    if (!individual.getPhenotypes().contains(disorder)) {
                         // Sibling unaffected, continue
                         continue;
                     }
