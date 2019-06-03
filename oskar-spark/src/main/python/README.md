@@ -32,14 +32,23 @@ Pyoskar is an open-source and collaborative project. We appreciate any help and 
 ### Developers
 In order to ease the development, developers need to create three symbolic links:
 
-1. PyOskar needs access to the Java JAr files where code is actually implemented, so we need 
-to crate a link to that _libs_ folder:
+1. PyOskar needs access to the Java JAR files where code is actually implemented. Those files are stored in _oskar/oskar-spark/target_ and we need to load them whenever we start a Spark session. As we specified in _spark-defaults.conf_, this link will be created inside _oskar/oskar-spark/src/main/python_, and it will receive the _libs_ name.
 
 ```bash
 cd oskar-spark/src/main/python
-ln -s ../../../target libs [from: target to: python]
+ln -s ../../../target libs [from: python to: target]
 ```
 
-ln -s ../pyoskar pyoskar [from: python to: notebooks]
+2. The notebooks need access to the PyOskar API. This is achieved by creating another link inside _notebooks_ file that points to _oskar/oskar-spark/src/main/python_ file. It receives the name of _pyoskar_.
 
-ln -s PATH_TO_DATA data [from: PATH_TO_DATA to: notebooks]
+```bash
+cd oskar-spark/src/main/python/notebooks
+ln -s ../pyoskar pyoskar [from: notebooks to: python]
+```
+
+3. This last link is optional can be set as the user please. It points to the parquet file. We will need to use it whenever we want to load this file into a DataFrame through the _load_ PyOskar function. 
+
+```bash
+cd oskar-spark/src/main/python/notebooks
+ln -s PATH_TO_DATA data [from: notebooks to: PATH_TO_DATA]
+```
