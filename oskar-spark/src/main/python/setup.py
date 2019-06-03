@@ -13,9 +13,9 @@ setup(
     url='https://github.com/opencb/oskar/tree/develop/oskar-spark/src/main/python',
     packages=['pyoskar', 'notebooks'],
     license='Apache Software License',
-    keywords='opencb oskar pyoskar spark pyspark hadoop bioinformatics genomic',
+    keywords='opencb oskar pyoskar spark pyspark hadoop bioinformatics genome',
     classifiers=[
-        "Programming Language :: Python :: 2",
+        # "Programming Language :: Python :: 2",
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
@@ -27,5 +27,8 @@ setup(
         # 'avro == 1.7.7',
         'numpy',
         'pandas'
+        # java
+        # plotly (advisable)
+        # unittest?
     ]
 )

@@ -8,7 +8,7 @@ LIMIT = 3
 class TestMetadata(TestOskarBase):
 
     def test_metadata_path(self):
-        print(self.oskar.metadata.getMetadataPath("metadata"))
+        print(self.oskar.metadata.getMetadataPath("/home/roldanx/appl/oskar/oskar-spark/src/main/python/notebooks/data/platinum_chr22.small.parquet"))
 
     def test_samples(self):
         print(self.oskar.metadata.samples(self.df, "hgvauser@platinum:illumina_platinum"))

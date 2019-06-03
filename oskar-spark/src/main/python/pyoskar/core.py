@@ -105,7 +105,7 @@ class Oskar(JavaWrapper):
 
     def ibd(self, df, samples=None, skipMultiAllelic=None, skipReference=None, numPairs=None):
         """
-        Calculates the Identity By Descendent.
+        Calculate the Identity By Descendent.
 
         :type df: DataFrame
         :param df: Original dataframe
@@ -130,7 +130,7 @@ class Oskar(JavaWrapper):
 
     def ibs(self, df, samples=None, skipMultiAllelic=None, skipReference=None, numPairs=None):
         """
-        Calculates the Identity By State.
+        Calculate the Identity By State.
 
         :type df: DataFrame
         :param df: Original dataframe
@@ -339,24 +339,34 @@ class VariantMetadataManager(JavaWrapper):
         self.python_utils = PythonUtils()
 
     def getMetadataPath(self, path):
-        return path + ".meta.json.gz"
+        """
+        Look for a file in the given path plus ".json" and ".json.gz" and return it in case there is such.
+
+        :type path: str
+        :param path: Path to the metadata file
+
+        :rtype: str
+        :return: The metadata path substring.
+        """
+        java_vm = self._call_java("getMetadataPath", path)
+        return self.python_utils.toPythonDict(java_vm)
 
     def readMetadata(self, meta_path):
         """
-        Writes the VariantMetadata into the schema metadata from the given dataframe.
+        return the metadata file as a dict.
 
         :type meta_path: str
         :param meta_path: Path to the metadata file
 
         :rtype: dict
-        :return: An instance of VariantMetadata
+        :return: The VariantMetadata
         """
         java_vm = self._call_java("readMetadata", meta_path)
         return self.python_utils.toPythonDict(java_vm)
 
     def setVariantMetadata(self, df, variant_metadata):
         """
-        Writes the VariantMetadata into the schema metadata from the given dataframe.
+        Write the VariantMetadata into the schema metadata from the given dataframe.
 
         :type df: DataFrame
         :param df: DataFrame to modify
@@ -365,23 +375,56 @@ class VariantMetadataManager(JavaWrapper):
         :param variant_metadata: VariantMetadata to set
 
         :rtype: DataFrame
-        :return: Modified DataFrame
+        :return: The modified DataFrame
         """
         java_object = self.python_utils.toJavaObject(variant_metadata,
                                                      "org.opencb.biodata.models.variant.metadata.VariantMetadata")
         return self._call_java("setVariantMetadata", df, java_object)
 
     def variantMetadata(self, df):
+        """
+        Return the metadata from inside the df.
+
+        :type df: DataFrame
+        :param df: DataFrame to modify
+
+        :rtype: VariantMetadata
+        :return: The VariantMetadata.
+        """
         java_vm = self._call_java("variantMetadata", df)
         return self.python_utils.toPythonDict(java_vm)
 
     def samples(self, df, studyId=None):
+        """
+        Return the samples from inside the VariantMetadata.
+
+        :type df: DataFrame
+        :param df: DataFrame
+
+        :type df: str
+        :param df: The study containing the samples
+
+        :rtype: dict
+        :return: The samples.
+        """
         if studyId is None:
             return self.python_utils.toPythonDict(self._call_java("samples", df))
         else:
             return self.python_utils.toPythonDict(self._call_java("samples", df, studyId))
 
     def pedigrees(self, df, studyId=None):
+        """
+        Return the pedigree from inside the VariantMetadata.
+
+        :type df: DataFrame
+        :param df: DataFrame
+
+        :type df: str
+        :param df: The study containing the pedigree
+
+        :rtype: dict
+        :return: The pedigree.
+        """
         if studyId is None:
             java_vm = self._call_java("pedigrees", df)
             return self.python_utils.toPythonDict(java_vm)
